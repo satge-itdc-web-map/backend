@@ -25,6 +25,13 @@ pipeline {
                         echo "JWT_SECRET=${JWT_SECRET}" >> .env
                         echo "DATABASE_URL=${DATABASE_URL}" >> .env
                         
+                        # Variables séparées attendues par NestJS
+                        echo "DB_HOST=postgres_db" >> .env
+                        echo "DB_PORT=5432" >> .env
+                        echo "DB_USERNAME=postgres" >> .env
+                        echo "DB_PASSWORD=postgres" >> .env
+                        echo "DB_NAME=webmap_db" >> .env
+                        
                         docker compose down || true
                         docker compose up -d --build
                     '''
