@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres_db:
-    image: postgres:15-alpine
+    image: postgis/postgis:15-3.3-alpine # Utilisation de l'image avec PostGIS
     container_name: nestjs_postgres
     restart: always
     environment:
@@ -10,9 +10,14 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-webmap_db}
     ports:
-      - "5433:5432" # Utilise le port 5433 sur le serveur hôte
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 
@@ -27,8 +32,14 @@ services:
       - PORT=4000
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=webmap_db
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
     networks:
       - app-network
 
