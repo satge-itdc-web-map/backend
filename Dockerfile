@@ -16,14 +16,13 @@ WORKDIR /usr/src/app
 ENV NODE_ENV=production
 
 COPY package*.json ./
-# Installation des dépendances de prod + ts-node & typescript pour exécuter le seed .ts
-RUN npm ci --only=production && npm install ts-node typescript
+RUN npm ci --only=production
 
-# Copie du code compilé et des fichiers GeoJSON
+# Copie du code compilé (dist) et des sources/données
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/src ./src
+COPY --from=builder /usr/src/app/src/data ./dist/data
 
-# Copie et attribution des droits au script d'entrée
+# Copie du script d'entrée
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh
 
