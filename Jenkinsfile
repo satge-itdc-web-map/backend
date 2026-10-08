@@ -38,7 +38,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo "Déploiement de l'application sur le port ${PORT} réussi !"
+            echo "Déploiement du backend et de la base de données réussi !"
         }
         failure {
             echo "Échec du déploiement."
