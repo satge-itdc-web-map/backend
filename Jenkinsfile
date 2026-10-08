@@ -13,27 +13,8 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build & Deploy via Docker') {
             steps {
-                sh 'npm ci'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build -t ${APP_NAME}:latest ."
-            }
-        }
-
-        stage('Deploy Container') {
-            steps {
-                // Injection des credentials Jenkins dans le fichier .env avant le lancement
                 withCredentials([
                     string(credentialsId: 'JWT_SECRET_CREDENTIAL_ID', variable: 'JWT_SECRET'),
                     string(credentialsId: 'DATABASE_URL_CREDENTIAL_ID', variable: 'DATABASE_URL')
