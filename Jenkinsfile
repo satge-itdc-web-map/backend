@@ -25,8 +25,8 @@ pipeline {
                         echo "JWT_SECRET=${JWT_SECRET}" >> .env
                         echo "DATABASE_URL=${DATABASE_URL}" >> .env
                         
-                        docker-compose down || true
-                        docker-compose up -d --build
+                        docker compose down || true
+                        docker compose up -d --build
                     '''
                 }
             }
