@@ -8,8 +8,8 @@ until nc -z -v -w30 $DB_HOST $DB_PORT; do
 done
 echo "Base de données accessible !"
 
-echo "=== Exécution du seed automatique (importation des données GeoJSON) ==="
-node dist/import-facilities.js || echo "Avertissement : Erreur lors de l'exécution du seed"
+echo "=== Import automatique désactivé pour éviter les réinsertions ==="
+# Les imports seront exécutés manuellement après contrôle des données.
 
 echo "=== Démarrage de l'application NestJS ==="
 exec "$@"

@@ -90,16 +90,20 @@ async function runImport() {
       if (feature.geometry && feature.properties) {
         const props = feature.properties;
         const geomJson = JSON.stringify(feature.geometry);
-        const pop = props.mdg_admpop_adm3_2018_t_tl || props.population || 0;
+        const pop =
+  props.mdg_admpop_adm3_2018_T_TL ??
+  props.mdg_admpop_adm3_2018_t_tl ??
+  props.population ??
+  0;
 
         try {
           await dataSource.query(
             `INSERT INTO communes_population (adm1_en, adm2_en, adm3_en, mdg_admpop_adm3_2018_t_tl, geom)
              VALUES ($1, $2, $3, $4, ST_SetSRID(ST_GeomFromGeoJSON($5), 4326))`,
             [
-              props.adm1_en || props.adm1_name || null,
-              props.adm2_en || props.adm2_name || null,
-              props.adm3_en || props.adm3_name || null,
+              props.ADM1_EN ?? props.adm1_en ?? props.adm1_name ?? null,
+props.ADM2_EN ?? props.adm2_en ?? props.adm2_name ?? null,
+props.ADM3_EN ?? props.adm3_en ?? props.adm3_name ?? null,
               pop,
               geomJson,
             ],
