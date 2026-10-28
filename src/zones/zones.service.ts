@@ -47,20 +47,20 @@ export class ZonesService implements OnModuleInit {
   private readonly CACHE_TTL_MS = 15 * 60 * 1000;
 
   async onModuleInit() {
-    this.logger.log('Pré-chargement du cache classement et GeoJSON régions...');
-    try {
-      await Promise.all([
-        this.computeClassementRows().then((rows) => {
-          this.classementRowsCache = { rows, timestamp: Date.now() };
-          this.logger.log(`Cache classement prêt — ${rows.length} districts`);
-        }),
-        this.getRegionGeoJson().then(() => {
-          this.logger.log('Cache GeoJSON régions prêt');
-        }),
-      ]);
-    } catch (err) {
+    this.logger.log('Lancement du pré-chargement asynchrone du cache en arrière-plan...');
+    
+    // CORRECTION : Exécution en arrière-plan sans bloquer le démarrage du serveur HTTP
+    Promise.all([
+      this.computeClassementRows().then((rows) => {
+        this.classementRowsCache = { rows, timestamp: Date.now() };
+        this.logger.log(`Cache classement prêt — ${rows.length} districts`);
+      }),
+      this.getRegionGeoJson().then(() => {
+        this.logger.log('Cache GeoJSON régions prêt');
+      }),
+    ]).catch((err) => {
       this.logger.error('Erreur pré-chargement cache zones', err);
-    }
+    });
   }
 
   invalidateCache() {
