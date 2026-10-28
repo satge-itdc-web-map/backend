@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    triggers {
+        // Vérifie les changements sur le dépôt Git toutes les 2 minutes et lance le build automatiquement
+        pollSCM('H/2 * * * *')
+    }
+
     environment {
         NETWORK_NAME    = 'app-network'
         
