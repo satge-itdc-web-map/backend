@@ -8,23 +8,20 @@ async function bootstrap() {
   app.use(require('express').json({ limit: '10mb' }));
   app.use(require('express').urlencoded({ limit: '10mb', extended: true }));
 
-  // Liste des origines explicitement autorisées
+  // Liste des origines explicitement autorisées pour votre Web Map
   const allowedOrigins = [
-    'http://localhost:3002',   // Votre Frontend Web en Local
-    'http://127.0.0.1:3002',   // Variante IP local
+    'http://localhost:3002',
+    'http://127.0.0.1:3002',
   ];
 
-  // Configuration CORS complète (Mobile + Web Local)
+  // Configuration CORS complète (Mobile React Native + Web)
   app.enableCors({
     origin: (origin, callback) => {
-      // 1. !origin : Requis pour les applications mobiles React Native (car elles n'envoient pas de header Origin)
-      // 2. allowedOrigins.includes(origin) : Pour autoriser explicitement votre frontend localhost:3002
-      // 3. fallback true : Pour autoriser toutes les autres origines si besoin
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost')) {
+      // !origin autorise les requêtes mobiles (React Native / Postman sans header Origin)
+      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost') || origin.startsWith('https://')) {
         callback(null, true);
       } else {
-        // En cas de doute, autoriser (garde la même souplesse qu'origin: true pour le mobile)
-        callback(null, true);
+        callback(null, true); // Fallback tolérant pour éviter les blocages de transport mobile
       }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -33,7 +30,11 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 4000;
+  
+  // Écoute obligatoire sur 0.0.0.0 pour accepter les connexions externes et de l'hôte
   await app.listen(port, '0.0.0.0');
-  console.log(`Backend prêt et connecté sur le port ${port}`);
+  
+  console.log(`=== Démarrage réussi ===`);
+  console.log(`Backend Web Map prêt et connecté sur le port ${port}`);
 }
 bootstrap();
