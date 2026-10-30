@@ -10,8 +10,10 @@ import { RecommandationModule } from './recommandation/recommandation.module';
 
 @Module({
   imports: [
+    // Aucun fichier .env : les variables viennent de Jenkins (credentials)
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -19,7 +21,6 @@ import { RecommandationModule } from './recommandation/recommandation.module';
       useFactory: (config: ConfigService) => {
         const dbUrl = config.get<string>('DATABASE_URL');
 
-        // Si DATABASE_URL est fourni par le .env
         if (dbUrl) {
           return {
             type: 'postgres',
@@ -29,14 +30,14 @@ import { RecommandationModule } from './recommandation/recommandation.module';
           };
         }
 
-        // Sinon, utilise les variables individuelles avec fallback Docker
+        // Aucune valeur par défaut : une variable absente arrête le démarrage
         return {
           type: 'postgres',
-          host: config.get<string>('DB_HOST', 'postgres_db'),
-          port: config.get<number>('DB_PORT', 5432),
-          username: config.get<string>('DB_USERNAME', 'postgres'),
-          password: config.get<string>('DB_PASSWORD', 'postgres'),
-          database: config.get<string>('DB_NAME', 'webmap_db'),
+          host: config.getOrThrow<string>('DB_HOST'),
+          port: Number(config.getOrThrow<string>('DB_PORT')),
+          username: config.getOrThrow<string>('DB_USERNAME'),
+          password: config.getOrThrow<string>('DB_PASSWORD'),
+          database: config.getOrThrow<string>('DB_NAME'),
           autoLoadEntities: true,
           synchronize: true,
         };

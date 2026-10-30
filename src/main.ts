@@ -10,8 +10,11 @@ async function bootstrap() {
 
   // Liste des origines explicitement autorisées pour votre Web Map
   const allowedOrigins = [
+    // Développement local
     'http://localhost:3002',
     'http://127.0.0.1:3002',
+    // Production
+    'https://web-map.duckdns.org',
   ];
 
   // Configuration CORS complète (Mobile React Native + Web)
@@ -29,12 +32,16 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.PORT || 4000;
-  
+  // Le port est fourni par Jenkins (variable PORT), sans valeur par défaut
+  const port = process.env.PORT;
+  if (!port) {
+    throw new Error("Variable d'environnement obligatoire absente : PORT");
+  }
+
   // Écoute obligatoire sur 0.0.0.0 pour accepter les connexions externes et de l'hôte
   await app.listen(port, '0.0.0.0');
-  
+
   console.log(`=== Démarrage réussi ===`);
-  console.log(`Backend Web Map prêt et connecté sur le port ${port}`);
+  console.log("Backend Web Map prêt.");
 }
 bootstrap();

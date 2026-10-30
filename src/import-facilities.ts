@@ -1,19 +1,10 @@
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { optionsBase } from './db-config';
 
 async function runImport() {
-  const dataSource = new DataSource({
-    type: 'postgres',
-    host: process.env.DB_HOST || 'postgres_db',
-    port: Number(process.env.DB_PORT) || 5432,
-    username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'webmap_db',
-  });
+  const dataSource = new DataSource(optionsBase());
 
   await dataSource.initialize();
   console.log('Connexion à PostgreSQL réussie');

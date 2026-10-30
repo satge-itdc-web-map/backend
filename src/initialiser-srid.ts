@@ -3,10 +3,7 @@
 // Ne supprime rien et ne remplace aucune définition existante.
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
-
-// Les variables injectées par Jenkins restent prioritaires.
-dotenv.config({ quiet: true, override: false });
+import { optionsBase } from './db-config';
 
 const references = [
   {
@@ -22,19 +19,7 @@ const references = [
 ];
 
 async function main(): Promise<void> {
-  const url = process.env.DATABASE_URL;
-  const dataSource = new DataSource(
-    url
-      ? { type: 'postgres', url }
-      : {
-          type: 'postgres',
-          host: process.env.DB_HOST || 'postgres_db',
-          port: Number(process.env.DB_PORT || 5432),
-          username: process.env.DB_USERNAME || 'postgres',
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME || 'webmap_db',
-        },
-  );
+  const dataSource = new DataSource(optionsBase());
 
   await dataSource.initialize();
 
